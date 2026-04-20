@@ -1,0 +1,36 @@
+{
+  "name": "accion360",
+  "version": "1.0.0",
+  "description": "ACCION 360 - Seguimiento de servicio por roles",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/244020800510264-boop/Accion360.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/244020800510264-boop/Accion360/issues"
+  },
+  "homepage": "https://github.com/244020800510264-boop/Accion360#readme",
+  "dependencies": {
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.1",
+    "sonner": "^2.0.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.17",
+    "vite": "^8.0.9"
+  }
+}

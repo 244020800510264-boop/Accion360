@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Inter, "DM Sans", system-ui, sans-serif;
+}
+
+.input {
+  @apply w-full rounded-xl border border-soft-border bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100;
+}
+
+.btn-primary {
+  @apply rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700;
+}
+
+.btn-icon {
+  @apply rounded-xl border border-soft-border bg-white p-2 text-slate-600 transition hover:bg-green-50 hover:text-green-700;
+}
+
+.stat {
+  @apply rounded-xl border border-green-300 bg-green-100 p-2 text-sm font-semibold text-green-800;
+}
