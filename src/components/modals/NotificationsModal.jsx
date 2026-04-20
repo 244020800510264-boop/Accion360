@@ -23,8 +23,8 @@ export function NotificationsModal() {
     >
       <div className="space-y-3">
         {data.notifications.length === 0 ? (
-          <p className="text-sm text-slate-600 py-6 text-center">
-            No hay notificaciones por mostrar.
+          <p className="text-sm text-slate-600 py-8 text-center leading-relaxed">
+            No hay notificaciones nuevas.
           </p>
         ) : (
           <ul className="space-y-2">

@@ -10,10 +10,13 @@ export function ClaseFaltas() {
         <Scale className="h-6 w-6 text-emerald-600 shrink-0" />
         <div>
           <h2 className="text-base font-bold text-slate-900">Clase de faltas</h2>
-          <p className="text-sm text-slate-600 mt-1">
-            Edita las horas asignadas por tipo de falta. El seguimiento actual usa el tipo vinculado a la
-            falta activa: <span className="font-semibold text-emerald-700">{horasAsignadas} h</span>{" "}
-            asignadas con la plantilla vigente.
+          <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+            <strong className="text-slate-800">Edita las horas asignadas por tipo de falta</strong> (FALTA
+            LEVE, MODERADA, GRAVE y MUY GRAVE). Los valores se guardan automáticamente en este dispositivo y
+            se reflejan al instante en el seguimiento: la falta activa usa la plantilla del tipo
+            seleccionado, actualmente{" "}
+            <span className="font-semibold text-emerald-700 tabular-nums">{horasAsignadas} h</span>{" "}
+            asignadas según el tipo vinculado.
           </p>
         </div>
       </div>

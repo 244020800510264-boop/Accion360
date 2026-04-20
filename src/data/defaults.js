@@ -27,29 +27,15 @@ export const defaultSettings = {
   notasCuenta: "Los datos se guardan localmente en este dispositivo.",
 };
 
-export const defaultNotifications = [
-  {
-    id: "n1",
-    titulo: "Recordatorio de servicio",
-    cuerpo: "Tienes horas pendientes por registrar esta semana.",
-    fecha: "2026-04-14",
-    leida: false,
-  },
-  {
-    id: "n2",
-    titulo: "Actualización de reglamento",
-    cuerpo: "Se publicó una nueva versión del reglamento interno.",
-    fecha: "2026-04-10",
-    leida: true,
-  },
-];
+/** Por defecto sin notificaciones; el modal muestra el estado vacío. */
+export const defaultNotifications = [];
 
 export const defaultHistorial = [
   {
     id: "h1",
     fecha: "2026-03-22",
     tipoFalta: "FALTA MODERADA",
-    accion: "Uso de celular en evaluación",
+    descripcion: "Uso de celular en evaluación",
     reportadoPor: "Prof. Luis Hernández",
     sancionHoras: 12,
   },
@@ -57,7 +43,7 @@ export const defaultHistorial = [
     id: "h2",
     fecha: "2026-02-10",
     tipoFalta: "FALTA LEVE",
-    accion: "Llegada tardía reiterada",
+    descripcion: "Llegada tardía reiterada",
     reportadoPor: "Orientación educativa",
     sancionHoras: 4,
   },

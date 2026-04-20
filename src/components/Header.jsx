@@ -15,7 +15,9 @@ export function Header() {
     flushSave,
     setMobileSidebarOpen,
     mobileSidebarOpen,
+    data,
   } = useApp();
+  const unreadCount = data.notifications.filter((n) => !n.leida).length;
   const [spinning, setSpinning] = useState(false);
 
   const handleRefresh = () => {
@@ -83,7 +85,11 @@ export function Header() {
             onClick={() => setModal("notifications")}
           >
             <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-orange-500 ring-2 ring-white" />
+            {unreadCount > 0 ? (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[1.125rem] h-[1.125rem] px-1 rounded-full bg-orange-500 text-[10px] font-bold text-white flex items-center justify-center ring-2 ring-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            ) : null}
           </button>
           <button
             type="button"

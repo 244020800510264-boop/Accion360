@@ -26,9 +26,9 @@ export function Sidebar({ variant = "desktop" }) {
             key={item.id}
             type="button"
             onClick={() => setView(item.id)}
-            className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold tracking-wide transition border ${
+            className={`flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold tracking-wide transition-all duration-200 border ${
               active
-                ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                ? "bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-white"
                 : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/60"
             }`}
           >
@@ -54,7 +54,7 @@ export function Sidebar({ variant = "desktop" }) {
   }
 
   return (
-    <aside className="hidden sm:flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white min-h-[calc(100vh-4.5rem)] sticky top-[4.5rem] self-start">
+    <aside className="hidden sm:flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white min-h-[calc(100vh-7rem)] sticky top-28 self-start">
       {nav}
     </aside>
   );

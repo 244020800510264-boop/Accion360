@@ -1,10 +1,9 @@
 /**
- * Normas de conducta (texto orientativo tipo tablero escolar).
- * Puedes ajustar el listado para que coincida al 100% con tu Miro.
+ * Reglamento — secciones alineadas con las pantallas de referencia.
  */
 export const reglamentoSecciones = [
   {
-    titulo: "Asistencia y puntualidad",
+    titulo: "Asistencia y Puntualidad",
     normas: [
       "Asistir puntualmente a todas las clases y actividades programadas.",
       "Justificar faltas con el formato oficial y en el tiempo establecido.",
@@ -12,7 +11,7 @@ export const reglamentoSecciones = [
     ],
   },
   {
-    titulo: "Respeto y convivencia",
+    titulo: "Respeto y Convivencia",
     normas: [
       "Tratar con respeto a compañeros, docentes y personal del plantel.",
       "No realizar agresiones físicas, verbales ni cibernéticas.",
@@ -20,7 +19,7 @@ export const reglamentoSecciones = [
     ],
   },
   {
-    titulo: "Integridad académica",
+    titulo: "Integridad Académica",
     normas: [
       "No copiar en exámenes ni permitir que otros copien.",
       "Entregar trabajos originales y citar fuentes cuando corresponda.",
@@ -28,27 +27,11 @@ export const reglamentoSecciones = [
     ],
   },
   {
-    titulo: "Uso de instalaciones y bienes",
+    titulo: "Uso de Instalaciones y Bienes",
     normas: [
       "Cuidar mobiliario, equipo de cómputo y espacios comunes.",
       "Mantener aulas y pasillos limpios; depositar residuos en su lugar.",
       "Respetar áreas restringidas y señalética de seguridad.",
-    ],
-  },
-  {
-    titulo: "Presentación y seguridad",
-    normas: [
-      "Portar el uniforme completo según el calendario escolar.",
-      "No introducir objetos que pongan en riesgo la integridad de la comunidad.",
-      "Seguir protocolos de evacuación y de protección civil.",
-    ],
-  },
-  {
-    titulo: "Tecnología y comunicación",
-    normas: [
-      "Uso responsable de dispositivos electrónicos según reglamento interno.",
-      "No grabar ni difundir imágenes de personas sin consentimiento.",
-      "Comunicarse con el plantel por canales oficiales (correo, plataforma).",
     ],
   },
 ];

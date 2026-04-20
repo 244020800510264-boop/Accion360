@@ -15,7 +15,7 @@ export function Reglamento() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 animate-fade-in">
         {reglamentoSecciones.map((sec) => (
           <section
             key={sec.titulo}

@@ -35,7 +35,12 @@ function mergeWithDefaults(saved) {
       ? saved.notifications
       : base.notifications,
     faultTypes: Array.isArray(saved.faultTypes) ? saved.faultTypes : base.faultTypes,
-    historial: Array.isArray(saved.historial) ? saved.historial : base.historial,
+    historial: Array.isArray(saved.historial)
+      ? saved.historial.map((h) => ({
+          ...h,
+          descripcion: h.descripcion ?? h.accion ?? "",
+        }))
+      : base.historial,
     activities: Array.isArray(saved.activities) ? saved.activities : base.activities,
     currentFalta: { ...base.currentFalta, ...saved.currentFalta },
   };
@@ -134,6 +139,46 @@ export function AppProvider({ children, onToast }) {
     return id;
   }, []);
 
+  const removeActivity = useCallback((id) => {
+    setData((d) => ({
+      ...d,
+      activities: d.activities.filter((a) => a.id !== id),
+    }));
+  }, []);
+
+  const updateCurrentFalta = useCallback((patch) => {
+    setData((d) => ({
+      ...d,
+      currentFalta: { ...d.currentFalta, ...patch },
+    }));
+  }, []);
+
+  const addHistorialEntry = useCallback((entry) => {
+    const id = crypto.randomUUID();
+    setData((d) => ({
+      ...d,
+      historial: [
+        {
+          id,
+          fecha: entry.fecha,
+          tipoFalta: entry.tipoFalta,
+          descripcion: entry.descripcion,
+          reportadoPor: entry.reportadoPor,
+          sancionHoras: Number(entry.sancionHoras) || 0,
+        },
+        ...d.historial,
+      ],
+    }));
+    return id;
+  }, []);
+
+  const removeHistorialEntry = useCallback((id) => {
+    setData((d) => ({
+      ...d,
+      historial: d.historial.filter((h) => h.id !== id),
+    }));
+  }, []);
+
   const value = useMemo(
     () => ({
       view,
@@ -156,6 +201,10 @@ export function AppProvider({ children, onToast }) {
       updateFaultType,
       markNotificationRead,
       addActivity,
+      removeActivity,
+      updateCurrentFalta,
+      addHistorialEntry,
+      removeHistorialEntry,
     }),
     [
       view,
@@ -175,6 +224,10 @@ export function AppProvider({ children, onToast }) {
       updateFaultType,
       markNotificationRead,
       addActivity,
+      removeActivity,
+      updateCurrentFalta,
+      addHistorialEntry,
+      removeHistorialEntry,
     ]
   );
 

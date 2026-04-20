@@ -1,6 +1,7 @@
 import { AppProvider, useApp } from "./context/AppContext.jsx";
 import { useToast } from "./hooks/useToast.js";
 import { Header } from "./components/Header.jsx";
+import { HoursSummaryBar } from "./components/HoursSummaryBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { ToastStack } from "./components/ToastStack.jsx";
 import { SettingsModal } from "./components/modals/SettingsModal.jsx";
@@ -24,6 +25,7 @@ function Shell() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header />
+      <HoursSummaryBar />
 
       {mobileSidebarOpen ? (
         <div className="fixed inset-0 z-50 sm:hidden flex">
@@ -51,10 +53,12 @@ function Shell() {
             </div>
           </div>
 
-          {view === "seguimiento" ? <SeguimientoFaltas /> : null}
-          {view === "historial" ? <HistorialFaltas /> : null}
-          {view === "clase" ? <ClaseFaltas /> : null}
-          {view === "reglamento" ? <Reglamento /> : null}
+          <div key={view} className="animate-fade-in motion-reduce:animate-none">
+            {view === "seguimiento" ? <SeguimientoFaltas /> : null}
+            {view === "historial" ? <HistorialFaltas /> : null}
+            {view === "clase" ? <ClaseFaltas /> : null}
+            {view === "reglamento" ? <Reglamento /> : null}
+          </div>
         </main>
       </div>
 
