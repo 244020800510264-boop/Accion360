@@ -11,6 +11,11 @@ SPA (Single Page Application) para **seguimiento de horas de servicio** y consul
 
 Los datos se persisten en **`localStorage`** en el navegador (perfil, actividades, tipos de falta, historial, notificaciones y ajustes).
 
+## Manuales
+
+- **Manual de Usuario**: `docs/MANUAL_USUARIO.md`
+- **Manual Técnico**: `docs/MANUAL_TECNICO.md`
+
 ## Requisitos
 
 - Node.js **18+** (recomendado 20 LTS)
