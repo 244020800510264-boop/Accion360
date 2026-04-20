@@ -688,6 +688,16 @@ body {
   min-height: 96px;
 }
 
+.catalog-error {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--red);
+  background: var(--red-soft);
+  border: 1px solid #ffcdd2;
+  border-radius: var(--radius-sm);
+}
+
 .showcase-head {
   display: flex;
   flex-wrap: wrap;

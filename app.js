@@ -1,15 +1,13 @@
 /**
- * ACCION 360 — autenticación (demo), errores y catálogo de horas en memoria
+ * ACCION 360 — demo de login + catálogo de horas (memoria o Supabase)
  */
 (function () {
   "use strict";
 
-  /** Credenciales de demostración (sin backend) */
   const DEMO_PASSWORD = "demo1234";
-  /** Matrícula válida: 10 dígitos (ej. 1234567890) */
   const MATRICULA_OK = /^\d{10}$/;
-  /** Código de recuperación válido */
   const RECOVERY_CODE_OK = "123456";
+  const TABLE = "service_activities";
 
   const EMAIL_OK =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -19,6 +17,10 @@
   /** @type {{ id: string, name: string, detail: string, hours: number, completed: boolean }[]} */
   let activities = [];
 
+  let supabaseClient = null;
+  /** @type {Promise<unknown> | null} */
+  let supabasePromise = null;
+
   function $(id) {
     return document.getElementById(id);
   }
@@ -27,6 +29,93 @@
     if (typeof lucide !== "undefined" && lucide.createIcons) {
       lucide.createIcons();
     }
+  }
+
+  function setCatalogError(message) {
+    const el = $("catalogError");
+    if (!el) return;
+    if (message) {
+      el.textContent = message;
+      el.hidden = false;
+    } else {
+      el.textContent = "";
+      el.hidden = true;
+    }
+  }
+
+  function mapRow(row) {
+    const h = row.hours;
+    return {
+      id: row.id,
+      name: row.name,
+      detail: row.detail,
+      hours: typeof h === "number" ? h : parseFloat(String(h), 10),
+      completed: !!row.completed,
+    };
+  }
+
+  /**
+   * Cliente Supabase (clave publicable + URL del proyecto).
+   * Si la clave nueva (`sb_publishable_…`) falla, en el panel usa la clave **anon** (JWT) en `config.js`.
+   */
+  async function getSupabase() {
+    const url = window.SUPABASE_URL;
+    const key = window.SUPABASE_ANON_KEY;
+    if (!url || !key) return null;
+    if (supabaseClient) return supabaseClient;
+    if (!supabasePromise) {
+      supabasePromise = import("https://esm.sh/@supabase/supabase-js@2.49.1")
+        .then(function (mod) {
+          supabaseClient = mod.createClient(url, key, {
+            auth: { persistSession: false, autoRefreshToken: false },
+          });
+          return supabaseClient;
+        })
+        .catch(function (err) {
+          console.error(err);
+          supabasePromise = null;
+          return null;
+        });
+    }
+    return supabasePromise;
+  }
+
+  async function loadActivitiesFromDb() {
+    const grid = $("activityGrid");
+    const client = await getSupabase();
+
+    if (!client) {
+      if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+        setCatalogError(
+          "Supabase no configurado. Copia config.example.js a config.js con tu URL y clave publicable."
+        );
+      } else {
+        setCatalogError("No se pudo inicializar Supabase. Revisa la consola o la clave anon (JWT) en el panel.");
+      }
+      renderActivities();
+      return;
+    }
+
+    setCatalogError("");
+    if (grid) {
+      grid.innerHTML =
+        '<p class="panel-hint" style="grid-column:1/-1;margin:0">Cargando actividades…</p>';
+    }
+
+    const { data, error } = await client
+      .from(TABLE)
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setCatalogError(error.message || "No se pudieron cargar las actividades. ¿Ejecutaste supabase/schema.sql?");
+      activities = [];
+      renderActivities();
+      return;
+    }
+
+    activities = (data || []).map(mapRow);
+    renderActivities();
   }
 
   function showView(viewId) {
@@ -63,6 +152,12 @@
     });
   }
 
+  function enterDashboard() {
+    showView("view-dashboard");
+    updateStats();
+    loadActivitiesFromDb();
+  }
+
   if (loginForm) {
     loginForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -97,13 +192,10 @@
 
       loginForm.reset();
       clearLoginErrors();
-      showView("view-dashboard");
-      updateStats();
-      renderActivities();
+      enterDashboard();
     });
   }
 
-  /* ---------- Errores globales (reintentar) ---------- */
   document.querySelectorAll('[data-action="retry-matricula"]').forEach(function (btn) {
     btn.addEventListener("click", function () {
       showView("view-login");
@@ -169,15 +261,11 @@
       e.preventDefault();
       const email = (recoveryEmailInput && recoveryEmailInput.value.trim()) || "";
       if (!email) {
-        if (recoveryEmailError) {
-          recoveryEmailError.hidden = false;
-        }
+        if (recoveryEmailError) recoveryEmailError.hidden = false;
         return;
       }
       if (!EMAIL_OK.test(email)) {
-        if (recoveryEmailError) {
-          recoveryEmailError.hidden = false;
-        }
+        if (recoveryEmailError) recoveryEmailError.hidden = false;
         return;
       }
       if (recoveryEmailError) recoveryEmailError.hidden = true;
@@ -214,7 +302,6 @@
     }
     const first = codeBoxes.querySelector("input");
     if (first) first.focus();
-
     refreshIcons();
   }
 
@@ -254,9 +341,7 @@
         showView("view-error-code");
         return;
       }
-      showView("view-dashboard");
-      updateStats();
-      renderActivities();
+      enterDashboard();
     });
   }
 
@@ -281,8 +366,7 @@
   const btnRefresh = $("btnRefresh");
   if (btnRefresh) {
     btnRefresh.addEventListener("click", function () {
-      updateStats();
-      renderActivities();
+      loadActivitiesFromDb();
     });
   }
 
@@ -413,7 +497,7 @@
   }
 
   if (activityForm) {
-    activityForm.addEventListener("submit", function (e) {
+    activityForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!validateActivity()) return;
 
@@ -421,42 +505,78 @@
       const detail = detailInput.value.trim();
       const hours = Number(hoursInput.value);
 
-      activities.push({
-        id: crypto.randomUUID
-          ? crypto.randomUUID()
-          : String(Date.now()) + String(Math.random()),
-        name: name,
-        detail: detail,
-        hours: hours,
-        completed: false,
-      });
+      const client = await getSupabase();
 
+      if (!client) {
+        activities.push({
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + String(Math.random()),
+          name: name,
+          detail: detail,
+          hours: hours,
+          completed: false,
+        });
+        activityForm.reset();
+        clearActErrors();
+        renderActivities();
+        return;
+      }
+
+      const { data, error } = await client
+        .from(TABLE)
+        .insert({ name: name, detail: detail, hours: hours, completed: false })
+        .select()
+        .single();
+
+      if (error) {
+        setCatalogError(error.message || "No se pudo guardar la actividad.");
+        return;
+      }
+
+      setCatalogError("");
       activityForm.reset();
       clearActErrors();
+      activities.unshift(mapRow(data));
       renderActivities();
     });
   }
 
   if (grid) {
-    grid.addEventListener("click", function (e) {
+    grid.addEventListener("click", async function (e) {
       const delBtn = e.target.closest('[data-action="delete"]');
       if (!delBtn) return;
       const card = delBtn.closest(".activity-card");
       const id = card && card.dataset.id;
-      if (id) {
+      if (!id) return;
+
+      const client = await getSupabase();
+      if (!client) {
         activities = activities.filter(function (a) {
           return a.id !== id;
         });
         renderActivities();
+        return;
       }
+
+      const { error } = await client.from(TABLE).delete().eq("id", id);
+      if (error) {
+        setCatalogError(error.message || "No se pudo eliminar.");
+        return;
+      }
+
+      setCatalogError("");
+      activities = activities.filter(function (a) {
+        return a.id !== id;
+      });
+      renderActivities();
     });
 
-    grid.addEventListener("change", function (e) {
+    grid.addEventListener("change", async function (e) {
       const cb = e.target;
       if (!cb.matches || !cb.matches('input[data-action="toggle"]')) return;
       const card = cb.closest(".activity-card");
       const id = card && card.dataset.id;
       if (!id) return;
+
       let act = null;
       for (let i = 0; i < activities.length; i++) {
         if (activities[i].id === id) {
@@ -464,10 +584,27 @@
           break;
         }
       }
-      if (act) {
-        act.completed = cb.checked;
-        card.classList.toggle("completed", act.completed);
+      if (!act) return;
+
+      const completed = cb.checked;
+      const client = await getSupabase();
+
+      if (!client) {
+        act.completed = completed;
+        card.classList.toggle("completed", completed);
+        return;
       }
+
+      const { error } = await client.from(TABLE).update({ completed: completed }).eq("id", id);
+      if (error) {
+        cb.checked = !completed;
+        setCatalogError(error.message || "No se pudo actualizar.");
+        return;
+      }
+
+      setCatalogError("");
+      act.completed = completed;
+      card.classList.toggle("completed", completed);
     });
   }
 
