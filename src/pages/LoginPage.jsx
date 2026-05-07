@@ -28,12 +28,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-soft-bg p-4">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-soft">
-        <p className="text-center text-xs font-bold uppercase tracking-wider text-green-700">
+    <div className="flex min-h-screen items-center justify-center bg-soft-bg p-4 dark:bg-slate-950">
+      <div className="w-full max-w-md rounded-3xl bg-white p-5 shadow-soft sm:p-6 dark:bg-slate-900">
+        <p className="text-center text-xs font-bold uppercase tracking-wider text-green-700 dark:text-emerald-300">
           PEQUENAS ACCIONES GRANDES CAMBIOS
         </p>
-        <h1 className="mt-2 text-center text-xl font-semibold text-slate-700">ACCION 360 - Seguimiento de servicio</h1>
+        <h1 className="mt-2 text-center text-lg font-semibold text-slate-700 sm:text-xl dark:text-slate-100">
+          ACCION 360 - Seguimiento de servicio
+        </h1>
         <form onSubmit={submit} className="mt-5 space-y-3">
           <input
             className="input"
@@ -51,16 +53,19 @@ export default function LoginPage() {
           />
           <button className="btn-primary w-full">Iniciar Sesion</button>
         </form>
-        <button onClick={() => setOpenRecovery(true)} className="mt-3 text-sm text-green-700 underline">
+        <button
+          onClick={() => setOpenRecovery(true)}
+          className="mt-3 text-sm text-green-700 underline transition-all duration-[250ms] hover:scale-105 hover:text-green-800 dark:text-emerald-300 dark:hover:text-emerald-200"
+        >
           Olvidaste tu contrasena?
         </button>
-        <p className="mt-4 text-xs text-slate-500">
+        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
           Alumno: 1234567890 / demo1234 - Profesor: 9876543210 / demo1234
         </p>
       </div>
 
       <Modal open={openRecovery} title="Recuperar cuenta" onClose={() => setOpenRecovery(false)}>
-        <p className="mb-2 text-sm text-slate-600">Ingresa tu correo para recuperar acceso.</p>
+        <p className="mb-2 text-sm text-slate-600 dark:text-slate-300">Ingresa tu correo para recuperar acceso.</p>
         <input
           className="input"
           placeholder="correo@ejemplo.com"

@@ -4,20 +4,68 @@
 
 body {
   font-family: Inter, "DM Sans", system-ui, sans-serif;
+  @apply bg-soft-bg text-slate-800 dark:bg-slate-950 dark:text-slate-100;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .input {
-  @apply w-full rounded-xl border border-soft-border bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100;
+  @apply w-full rounded-xl border border-soft-border bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition duration-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-900;
 }
 
 .btn-primary {
-  @apply rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700;
+  @apply rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-[250ms] hover:scale-[1.08] hover:bg-green-700 hover:shadow-[0_10px_28px_rgba(22,163,74,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-300 active:scale-[1.02] dark:bg-emerald-500 dark:hover:bg-emerald-400;
 }
 
 .btn-icon {
-  @apply rounded-xl border border-soft-border bg-white p-2 text-slate-600 transition hover:bg-green-50 hover:text-green-700;
+  @apply rounded-xl border border-soft-border bg-white p-2.5 text-slate-600 shadow-sm transition-all duration-[250ms] hover:scale-110 hover:bg-green-50 hover:text-green-700 hover:shadow-[0_10px_25px_rgba(22,163,74,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-300 active:scale-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-emerald-300;
 }
 
 .stat {
-  @apply rounded-xl border border-green-300 bg-green-100 p-2 text-sm font-semibold text-green-800;
+  @apply rounded-xl border border-green-300 bg-green-100 p-2.5 text-sm font-semibold text-green-800 dark:border-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-200;
+}
+
+.card-enter {
+  animation: fade-up 320ms ease-out both;
+}
+
+.modal-backdrop {
+  animation: fade-up 180ms ease-out both;
+}
+
+.modal-panel {
+  animation: modal-in 240ms ease-out both;
+}
+
+button,
+a[role="button"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%2322c55e' stop-opacity='0.95'/%3E%3Cstop offset='45%25' stop-color='%2322c55e' stop-opacity='0.32'/%3E%3Cstop offset='100%25' stop-color='%2322c55e' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='20' cy='20' r='18' fill='url(%23g)'/%3E%3Ccircle cx='20' cy='20' r='6' fill='%2322c55e'/%3E%3C/svg%3E")
+      20 20,
+    pointer;
+}
+
+button:hover,
+a[role="button"]:hover {
+  filter: brightness(1.06);
+  transition: all 250ms ease;
 }

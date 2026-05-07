@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { reglamento } from "../data/seed";
 
 export default function ServiceTrackerView({
@@ -13,8 +13,11 @@ export default function ServiceTrackerView({
   updateFaultCard,
   updateTiposFaltas,
   addHistorialFalta,
+  removeHistorialFalta,
+  updateActividad,
 }) {
   const [actividad, setActividad] = useState({ nombre: "", detalle: "", horas: "", fecha: "" });
+  const [editingActivityId, setEditingActivityId] = useState(null);
   const [nuevaFalta, setNuevaFalta] = useState({
     fecha: "",
     tipo: "Leve",
@@ -31,7 +34,12 @@ export default function ServiceTrackerView({
   const submitActividad = (e) => {
     e.preventDefault();
     if (!actividad.nombre || !actividad.detalle || !actividad.horas) return;
-    addActividad({ ...actividad, horas: Number(actividad.horas) });
+    if (editingActivityId) {
+      updateActividad(editingActivityId, { ...actividad, horas: Number(actividad.horas) });
+      setEditingActivityId(null);
+    } else {
+      addActividad({ ...actividad, horas: Number(actividad.horas) });
+    }
     setActividad({ nombre: "", detalle: "", horas: "", fecha: "" });
   };
 
@@ -44,13 +52,17 @@ export default function ServiceTrackerView({
 
   if (vista === "REGLAMENTO") {
     return (
-      <section className="rounded-2xl bg-white p-4 shadow-soft">
-        <h2 className="mb-3 text-lg font-semibold text-slate-700">Reglamento</h2>
+      <section className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
+        <h2 className="mb-3 text-lg font-semibold text-slate-700 dark:text-slate-100">Reglamento</h2>
         <div className="grid gap-3 md:grid-cols-2">
-          {reglamento.map((item) => (
-            <article key={item.titulo} className="rounded-xl border border-soft-border bg-slate-50 p-3">
-              <h3 className="font-semibold text-green-700">{item.titulo}</h3>
-              <p className="mt-1 text-sm text-slate-600">{item.descripcion}</p>
+          {reglamento.map((item, idx) => (
+            <article
+              key={item.titulo}
+              className="card-enter rounded-xl border border-soft-border bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800"
+              style={{ animationDelay: `${idx * 60}ms` }}
+            >
+              <h3 className="font-semibold text-green-700 dark:text-emerald-300">{item.titulo}</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.descripcion}</p>
             </article>
           ))}
         </div>
@@ -60,11 +72,15 @@ export default function ServiceTrackerView({
 
   if (vista === "CLASE DE FALTAS") {
     return (
-      <section className="rounded-2xl bg-white p-4 shadow-soft">
-        <h2 className="mb-3 text-lg font-semibold text-slate-700">Clase de faltas</h2>
+      <section className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
+        <h2 className="mb-3 text-lg font-semibold text-slate-700 dark:text-slate-100">Clase de faltas</h2>
         <div className="space-y-3">
           {data.tiposFaltas.map((item, idx) => (
-            <div key={item.id} className="grid grid-cols-2 gap-2 rounded-xl border border-soft-border p-3">
+            <div
+              key={item.id}
+              className="card-enter grid grid-cols-1 gap-2 rounded-xl border border-soft-border p-3 sm:grid-cols-2 dark:border-slate-700"
+              style={{ animationDelay: `${idx * 55}ms` }}
+            >
               <input
                 className="input"
                 value={item.tipo}
@@ -94,24 +110,37 @@ export default function ServiceTrackerView({
   if (vista === "HISTORIAL DE FALTAS") {
     return (
       <section className="space-y-4">
-        <article className="rounded-2xl bg-white p-4 shadow-soft">
-          <h2 className="mb-3 text-lg font-semibold text-slate-700">Historial de faltas</h2>
+        <article className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
+          <h2 className="mb-3 text-lg font-semibold text-slate-700 dark:text-slate-100">Historial de faltas</h2>
           <div className="grid gap-3 md:grid-cols-2">
-            {data.historialFaltas.map((item) => (
-              <div key={item.id} className="rounded-xl border border-soft-border bg-slate-50 p-3">
-                <p className="text-xs text-slate-500">{item.fecha}</p>
-                <p className="font-semibold text-red-700">{item.tipo}</p>
-                <p className="text-sm text-slate-700">{item.descripcion}</p>
-                <p className="text-sm text-slate-500">Reportado por: {item.reportadoPor}</p>
-                <p className="text-sm font-medium text-slate-700">Sancion: {item.sancionHoras} horas</p>
+            {data.historialFaltas.map((item, idx) => (
+              <div
+                key={item.id}
+                className="card-enter rounded-xl border border-soft-border bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800"
+                style={{ animationDelay: `${idx * 70}ms` }}
+              >
+                <p className="text-xs text-slate-500 dark:text-slate-400">{item.fecha}</p>
+                <p className="font-semibold text-red-700 dark:text-red-300">{item.tipo}</p>
+                <p className="text-sm text-slate-700 dark:text-slate-100">{item.descripcion}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-300">Reportado por: {item.reportadoPor}</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-100">Sancion: {item.sancionHoras} horas</p>
+                {canEditFaults && (
+                  <button
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm text-red-600 transition-all duration-[250ms] hover:scale-105 hover:bg-red-50 hover:shadow-md dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40"
+                    onClick={() => removeHistorialFalta(item.id)}
+                  >
+                    <Trash2 size={16} />
+                    Eliminar falta
+                  </button>
+                )}
               </div>
             ))}
           </div>
         </article>
 
         {canEditFaults && (
-          <form onSubmit={submitFalta} className="rounded-2xl bg-white p-4 shadow-soft">
-            <h3 className="mb-3 font-semibold text-slate-700">Agregar nueva falta</h3>
+          <form onSubmit={submitFalta} className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
+            <h3 className="mb-3 font-semibold text-slate-700 dark:text-slate-100">Agregar nueva falta</h3>
             <div className="grid gap-2 md:grid-cols-2">
               <input
                 className="input"
@@ -157,15 +186,15 @@ export default function ServiceTrackerView({
   }
 
   return (
-    <section className="grid gap-4 lg:grid-cols-3">
-      <article className="rounded-2xl bg-white p-4 shadow-soft">
-        <h2 className="mb-3 text-sm font-semibold uppercase text-green-700">Resumen de horas</h2>
+    <section className="grid gap-4 xl:grid-cols-3">
+      <article className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
+        <h2 className="mb-3 text-sm font-semibold uppercase text-green-700 dark:text-emerald-300">Resumen de horas</h2>
         <div className="space-y-2">
           <div className="stat">Horas Asignadas: {data.horasAsignadas}</div>
           <div className="stat">Horas Realizadas: {horasRealizadas}</div>
           <div className="stat">Horas Pendientes: {horasPendientes}</div>
         </div>
-        <div className="mt-4 space-y-2 rounded-xl border border-soft-border bg-slate-50 p-3">
+        <div className="mt-4 space-y-2 rounded-xl border border-soft-border bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
           <input
             className="input"
             disabled={!canEditFaults}
@@ -185,8 +214,8 @@ export default function ServiceTrackerView({
         </div>
       </article>
 
-      <article className="rounded-2xl bg-white p-4 shadow-soft">
-        <h2 className="mb-3 text-sm font-semibold uppercase text-green-700">Registrar actividad de servicio</h2>
+      <article className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
+        <h2 className="mb-3 text-sm font-semibold uppercase text-green-700 dark:text-emerald-300">Registrar actividad de servicio</h2>
         <form onSubmit={submitActividad} className="space-y-2">
           <input
             className="input"
@@ -214,29 +243,53 @@ export default function ServiceTrackerView({
             value={actividad.fecha}
             onChange={(e) => setActividad((prev) => ({ ...prev, fecha: e.target.value }))}
           />
-          <button className="btn-primary w-full">Agregar actividad</button>
+          <button className="btn-primary w-full">{editingActivityId ? "Actualizar actividad" : "Agregar actividad"}</button>
         </form>
       </article>
 
-      <article className="rounded-2xl bg-white p-4 shadow-soft lg:col-span-1">
-        <h2 className="mb-3 text-sm font-semibold uppercase text-green-700">Actividades de servicio</h2>
+      <article className="rounded-2xl bg-white p-4 shadow-soft xl:col-span-1 dark:bg-slate-900">
+        <h2 className="mb-3 text-sm font-semibold uppercase text-green-700 dark:text-emerald-300">Actividades de servicio</h2>
         <div className="space-y-2">
-          {data.actividades.map((item) => (
-            <div key={item.id} className="rounded-xl border border-soft-border p-3">
+          {data.actividades.map((item, idx) => (
+            <div
+              key={item.id}
+              className="card-enter rounded-xl border border-soft-border p-3 dark:border-slate-700"
+              style={{ animationDelay: `${idx * 65}ms` }}
+            >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-slate-700">{item.nombre}</p>
-                  <p className="text-sm text-slate-500">{item.detalle}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="font-semibold text-slate-700 dark:text-slate-100">{item.nombre}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-300">{item.detalle}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {item.fecha || "Sin fecha"} - {item.horas} horas
                   </p>
                 </div>
-                <button
-                  className="rounded-md p-1 text-slate-500 hover:bg-red-50 hover:text-red-600"
-                  onClick={() => removeActividad(item.id)}
-                >
-                  <Trash2 size={16} />
-                </button>
+                {canEditFaults && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      className="rounded-lg p-2 text-slate-500 transition-all duration-[250ms] hover:scale-110 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-sky-300"
+                      onClick={() => {
+                        setEditingActivityId(item.id);
+                        setActividad({
+                          nombre: item.nombre,
+                          detalle: item.detalle,
+                          horas: String(item.horas),
+                          fecha: item.fecha || "",
+                        });
+                      }}
+                      aria-label="Editar actividad"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      className="rounded-lg p-2 text-slate-500 transition-all duration-[250ms] hover:scale-110 hover:bg-red-50 hover:text-red-600 dark:text-slate-300 dark:hover:bg-red-950/40 dark:hover:text-red-300"
+                      onClick={() => removeActividad(item.id)}
+                      aria-label="Eliminar actividad"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
