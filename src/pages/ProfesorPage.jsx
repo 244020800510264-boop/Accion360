@@ -173,7 +173,7 @@ export default function ProfesorPage() {
                         Sistemas - G101
                       </span>
                       <span className="px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full text-label-sm cursor-pointer hover:opacity-80 transition-opacity">
-                        Alumnos &lt; 50%
+                        Alumnos {"<"} 50%
                       </span>
                     </div>
                     <button className="bg-primary-container text-on-primary-container px-6 py-2 rounded-lg font-label-md font-bold hover:bg-primary hover:text-white transition-all shadow-sm">
