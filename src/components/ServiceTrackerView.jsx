@@ -19,7 +19,7 @@ export default function ServiceTrackerView({
   const [camposError, setCamposError] = useState({});
   const [nuevaFalta, setNuevaFalta] = useState({
     fecha: "",
-    tipo: "Leve",
+    tipo: "",
     descripcion: "",
     reportadoPor: "",
     sancionHoras: "",
@@ -28,7 +28,10 @@ export default function ServiceTrackerView({
   const canEditFaults = mode === "profesor";
   const vista = mode === "alumno" ? "SEGUIMIENTO DE FALTAS" : section;
 
-  const tipoFaltasOptions = useMemo(() => data.tiposFaltas.map((item) => item.tipo), [data.tiposFaltas]);
+  const tipoFaltasOptions = useMemo(
+    () => data.tiposFaltas.map((item) => item.tipo ?? item.nombre ?? ""),
+    [data.tiposFaltas],
+  );
 
   const submitActividad = (e) => {
     e.preventDefault();
@@ -50,7 +53,13 @@ export default function ServiceTrackerView({
     e.preventDefault();
     if (!nuevaFalta.fecha || !nuevaFalta.descripcion || !nuevaFalta.reportadoPor || !nuevaFalta.sancionHoras) return;
     addHistorialFalta({ ...nuevaFalta, sancionHoras: Number(nuevaFalta.sancionHoras) });
-    setNuevaFalta({ fecha: "", tipo: "Leve", descripcion: "", reportadoPor: "", sancionHoras: "" });
+    setNuevaFalta({
+      fecha: "",
+      tipo: tipoFaltasOptions[0] ?? "",
+      descripcion: "",
+      reportadoPor: "",
+      sancionHoras: "",
+    });
   };
 
   if (vista === "REGLAMENTO") {
@@ -78,10 +87,11 @@ export default function ServiceTrackerView({
             <div key={item.id} className="grid grid-cols-2 gap-2 rounded-xl border border-soft-border p-3">
               <input
                 className="input"
-                value={item.tipo}
+                value={item.tipo ?? item.nombre ?? ""}
                 onChange={(e) => {
                   const next = [...data.tiposFaltas];
-                  next[idx] = { ...next[idx], tipo: e.target.value };
+                  const val = e.target.value;
+                  next[idx] = { ...next[idx], tipo: val, nombre: val };
                   updateTiposFaltas(next);
                 }}
               />
@@ -139,7 +149,7 @@ export default function ServiceTrackerView({
               />
               <select
                 className="input"
-                value={nuevaFalta.tipo}
+                value={nuevaFalta.tipo || tipoFaltasOptions[0] || ""}
                 onChange={(e) => setNuevaFalta((p) => ({ ...p, tipo: e.target.value }))}
               >
                 {tipoFaltasOptions.map((item) => (

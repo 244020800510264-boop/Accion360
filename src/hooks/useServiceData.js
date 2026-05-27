@@ -6,20 +6,35 @@ import { defaultActivities, defaultFaultHistory } from "../data/seed";
 const STORAGE_KEY = "accion360_data";
 const DEFAULT_ASSIGNED_HOURS = 150;
 
+function normalizeTiposFaltas(list) {
+  return (list ?? []).map((f) => ({
+    ...f,
+    tipo: f.tipo ?? f.nombre ?? "",
+    nombre: f.nombre ?? f.tipo ?? "",
+  }));
+}
+
 function getInitialData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        ...parsed,
+        tiposFaltas: normalizeTiposFaltas(parsed.tiposFaltas ?? defaultFaultTypes),
+      };
+    }
   } catch {
     // noop
   }
+  const tiposFaltas = normalizeTiposFaltas(defaultFaultTypes);
   return {
     horasAsignadas: DEFAULT_ASSIGNED_HOURS,
     actividades: defaultActivities,
     historialFaltas: defaultFaultHistory,
-    tiposFaltas: defaultFaultTypes,
+    tiposFaltas,
     faltaCometida: "Golpe a un companero de clase",
-    tipoFaltaActual: "Grave",
+    tipoFaltaActual: tiposFaltas.find((f) => f.id === "ft-grave")?.tipo ?? tiposFaltas[0]?.tipo ?? "",
   };
 }
 
