@@ -26,6 +26,7 @@ export default function ServiceTrackerView({
   const [actividad, setActividad] = useState({ nombre: "", detalle: "", horas: "", fecha: "" });
   const [camposError, setCamposError] = useState({});
   const [editingActivityId, setEditingActivityId] = useState(null);
+  const [newestActivityId, setNewestActivityId] = useState(null);
   const [nuevaFalta, setNuevaFalta] = useState({
     fecha: "",
     tipo: "",
@@ -76,7 +77,9 @@ export default function ServiceTrackerView({
       toast.success("Actividad actualizada: " + actividad.nombre);
       setEditingActivityId(null);
     } else {
-      addActividad({ ...actividad, horas: Number(actividad.horas) });
+      const newActivity = { ...actividad, horas: Number(actividad.horas) };
+      addActividad(newActivity);
+      setNewestActivityId(newActivity.id);
       toast.success("Actividad registrada: " + actividad.nombre);
     }
 
@@ -361,8 +364,8 @@ export default function ServiceTrackerView({
           {data.actividades.map((item, idx) => (
             <div
               key={item.id}
-              className="card-enter rounded-xl border border-soft-border p-3 dark:border-slate-700"
-              style={{ animationDelay: `${idx * 65}ms` }}
+              className={`rounded-xl border border-soft-border p-3 dark:border-slate-700 ${item.id === newestActivityId ? "activity-new" : "card-enter"}`}
+              style={item.id !== newestActivityId ? { animationDelay: `${idx * 65}ms` } : {}}
             >
               <div className="flex items-start justify-between gap-2 min-w-0">
                 <div className="min-w-0 flex-1">

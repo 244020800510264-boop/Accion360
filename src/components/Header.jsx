@@ -1,7 +1,7 @@
 import { Bell, Moon, RefreshCw, Settings, Sun, UserRound } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
-export default function Header({ onRefresh, onSettings, onNotifications, onProfile, isSaving = false }) {
+export default function Header({ onRefresh, onSettings, onNotifications, onProfile, isSaving = false, notificationCount = 0 }) {
   const { isDark, toggleTheme } = useTheme();
 
   return (
@@ -24,7 +24,11 @@ export default function Header({ onRefresh, onSettings, onNotifications, onProfi
         </button>
         <button className="btn-icon relative" onClick={onNotifications} aria-label="Notificaciones">
           <Bell size={18} />
-          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
+          {notificationCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+              {notificationCount}
+            </span>
+          )}
         </button>
         <button className="btn-icon" onClick={onProfile} aria-label="Perfil">
           <UserRound size={18} />

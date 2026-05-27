@@ -49,6 +49,15 @@ body {
   animation: fade-up 320ms ease-out both;
 }
 
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.activity-new {
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
 .modal-backdrop {
   animation: fade-up 180ms ease-out both;
 }

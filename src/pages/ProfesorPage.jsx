@@ -13,6 +13,7 @@ export default function ProfesorPage() {
   const [section, setSection] = useState("SEGUIMIENTO DE FALTAS");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modal, setModal] = useState("");
+  const [notificationCount, setNotificationCount] = useState(2);
   const service = useServiceData();
 
   const handleSave = () => {
@@ -28,6 +29,7 @@ export default function ProfesorPage() {
           onSettings={() => setModal("settings")}
           onNotifications={() => setModal("notifications")}
           onProfile={() => setModal("profile")}
+          notificationCount={notificationCount}
         />
         <button
           type="button"
@@ -87,6 +89,7 @@ export default function ProfesorPage() {
         <p className="text-sm text-slate-600">Matricula: {user?.matricula}</p>
         <button
           className="btn-primary mt-3 w-full"
+          title="Cerrar sesión"
           onClick={() => {
             logout();
             toast.success("Sesion cerrada");

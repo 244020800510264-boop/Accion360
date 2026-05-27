@@ -12,6 +12,7 @@ export default function AlumnoPage() {
   const { user, logout } = useAuth();
   const [modal, setModal] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const service = useServiceData();
   const horasLiberadas = service.horasRealizadas;
   const metaFinal = 150;
@@ -37,10 +38,15 @@ export default function AlumnoPage() {
         </div>
         <div className="flex items-center gap-4">
           <button
-            className="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full"
+            className="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full relative"
             onClick={() => setModal("notifications")}
           >
             <Icon name="notifications" />
+            {notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                {notificationCount}
+              </span>
+            )}
           </button>
           <div className="w-8 h-8 rounded-full overflow-hidden bg-primary-container flex items-center justify-center text-on-primary">
             <span className="font-label-sm">JS</span>
@@ -217,6 +223,7 @@ export default function AlumnoPage() {
         <p className="text-sm text-on-surface-variant">Matricula: {user?.matricula}</p>
         <button
           className="btn-primary mt-3 w-full"
+          title="Cerrar sesión"
           onClick={() => {
             logout();
             toast.success("Sesion cerrada");
