@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { defaultActivities, defaultFaultHistory, defaultFaultTypes } from "../data/seed";
+import { toast } from "sonner";
+import { defaultFaultTypes } from "../data/defaults";
+import { defaultActivities, defaultFaultHistory } from "../data/seed";
 
 const STORAGE_KEY = "accion360_data";
 const DEFAULT_ASSIGNED_HOURS = 150;
@@ -35,6 +37,14 @@ export function useServiceData() {
   const horasPendientes = Math.max(0, data.horasAsignadas - horasRealizadas);
 
   const addActividad = (payload) => {
+    if (payload.horas <= 0) {
+      toast.error("Las horas deben ser mayor a 0");
+      return;
+    }
+    if (payload.horas > 24) {
+      toast.error("Máximo 24 horas por actividad");
+      return;
+    }
     setData((prev) => ({
       ...prev,
       actividades: [{ id: crypto.randomUUID(), ...payload }, ...prev.actividades],

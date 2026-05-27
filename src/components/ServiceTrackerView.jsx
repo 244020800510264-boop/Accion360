@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { CheckCircle, ClipboardList, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { reglamento } from "../data/seed";
 
 export default function ServiceTrackerView({
@@ -15,6 +16,7 @@ export default function ServiceTrackerView({
   addHistorialFalta,
 }) {
   const [actividad, setActividad] = useState({ nombre: "", detalle: "", horas: "", fecha: "" });
+  const [camposError, setCamposError] = useState({});
   const [nuevaFalta, setNuevaFalta] = useState({
     fecha: "",
     tipo: "Leve",
@@ -30,9 +32,18 @@ export default function ServiceTrackerView({
 
   const submitActividad = (e) => {
     e.preventDefault();
-    if (!actividad.nombre || !actividad.detalle || !actividad.horas) return;
+    const errors = {};
+    if (!actividad.nombre) errors.nombre = true;
+    if (!actividad.detalle) errors.detalle = true;
+    if (!actividad.horas) errors.horas = true;
+    if (Object.keys(errors).length > 0) {
+      setCamposError(errors);
+      return;
+    }
     addActividad({ ...actividad, horas: Number(actividad.horas) });
+    toast.success("Actividad registrada: " + actividad.nombre);
     setActividad({ nombre: "", detalle: "", horas: "", fecha: "" });
+    setCamposError({});
   };
 
   const submitFalta = (e) => {
@@ -96,17 +107,24 @@ export default function ServiceTrackerView({
       <section className="space-y-4">
         <article className="rounded-2xl bg-white p-4 shadow-soft">
           <h2 className="mb-3 text-lg font-semibold text-slate-700">Historial de faltas</h2>
-          <div className="grid gap-3 md:grid-cols-2">
-            {data.historialFaltas.map((item) => (
-              <div key={item.id} className="rounded-xl border border-soft-border bg-slate-50 p-3">
-                <p className="text-xs text-slate-500">{item.fecha}</p>
-                <p className="font-semibold text-red-700">{item.tipo}</p>
-                <p className="text-sm text-slate-700">{item.descripcion}</p>
-                <p className="text-sm text-slate-500">Reportado por: {item.reportadoPor}</p>
-                <p className="text-sm font-medium text-slate-700">Sancion: {item.sancionHoras} horas</p>
-              </div>
-            ))}
-          </div>
+          {data.historialFaltas.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-10">
+              <ClipboardList size={40} className="text-slate-300" />
+              <p className="text-sm text-slate-500">Sin faltas registradas</p>
+            </div>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {data.historialFaltas.map((item) => (
+                <div key={item.id} className="rounded-xl border border-soft-border bg-slate-50 p-3">
+                  <p className="text-xs text-slate-500">{item.fecha}</p>
+                  <p className="font-semibold text-red-700">{item.tipo}</p>
+                  <p className="text-sm text-slate-700">{item.descripcion}</p>
+                  <p className="text-sm text-slate-500">Reportado por: {item.reportadoPor}</p>
+                  <p className="text-sm font-medium text-slate-700">Sancion: {item.sancionHoras} horas</p>
+                </div>
+              ))}
+            </div>
+          )}
         </article>
 
         {canEditFaults && (
@@ -156,6 +174,8 @@ export default function ServiceTrackerView({
     );
   }
 
+  const pct = Math.min(100, Math.round((horasRealizadas / (data.horasAsignadas || 1)) * 100));
+
   return (
     <section className="grid gap-4 lg:grid-cols-3">
       <article className="rounded-2xl bg-white p-4 shadow-soft">
@@ -164,6 +184,25 @@ export default function ServiceTrackerView({
           <div className="stat">Horas Asignadas: {data.horasAsignadas}</div>
           <div className="stat">Horas Realizadas: {horasRealizadas}</div>
           <div className="stat">Horas Pendientes: {horasPendientes}</div>
+        </div>
+        <div className="mt-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
+            <span>{pct}%</span>
+            {pct === 100 && (
+              <>
+                <CheckCircle size={18} className="text-green-600" />
+                <span className="text-green-600">¡Completado!</span>
+              </>
+            )}
+          </div>
+          <div className="h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+            <div
+              className={`h-full rounded-full transition-all duration-700 ${
+                pct === 100 ? "bg-emerald-500" : "bg-green-500"
+              }`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
         </div>
         <div className="mt-4 space-y-2 rounded-xl border border-soft-border bg-slate-50 p-3">
           <input
@@ -189,20 +228,20 @@ export default function ServiceTrackerView({
         <h2 className="mb-3 text-sm font-semibold uppercase text-green-700">Registrar actividad de servicio</h2>
         <form onSubmit={submitActividad} className="space-y-2">
           <input
-            className="input"
+            className={`input ${camposError.nombre ? "border-red-400" : ""}`}
             placeholder="Nombre de la actividad"
             value={actividad.nombre}
             onChange={(e) => setActividad((prev) => ({ ...prev, nombre: e.target.value }))}
           />
           <textarea
-            className="input"
+            className={`input ${camposError.detalle ? "border-red-400" : ""}`}
             rows={3}
             placeholder="Detalle"
             value={actividad.detalle}
             onChange={(e) => setActividad((prev) => ({ ...prev, detalle: e.target.value }))}
           />
           <input
-            className="input"
+            className={`input ${camposError.horas ? "border-red-400" : ""}`}
             type="number"
             placeholder="Horas"
             value={actividad.horas}

@@ -16,7 +16,7 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={isAuthenticated ? `/${user.rol}` : "/login"} replace />} />
+      <Route path="/" element={<Navigate to={isAuthenticated && user?.rol ? `/${user.rol}` : "/login"} replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route
         path="/profesor"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Eye, EyeOff, KeyRound, Lock, User } from "lucide-react";
 import Modal from "../components/Modal";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,13 +10,41 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [openRecovery, setOpenRecovery] = useState(false);
   const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCredentials, setShowCredentials] = useState(false);
+  const [tab, setTab] = useState("alumno");
+  const [matriculaError, setMatriculaError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const handleMatriculaChange = (e) => {
+    const val = e.target.value.replace(/\D/g, "");
+    setMatricula(val);
+    if (val.length > 0 && val.length < 10) {
+      setMatriculaError("Faltan " + (10 - val.length) + " dígito(s)");
+    } else {
+      setMatriculaError("");
+    }
+  };
+
+  const demoMatricula = tab === "alumno" ? "1234567890" : "9876543210";
+  const demoPassword = "demo1234";
+
+  const switchTab = (newTab) => {
+    setTab(newTab);
+    setMatricula("");
+    setPassword("");
+    setMatriculaError("");
+  };
 
   const submit = (e) => {
     e.preventDefault();
     if (!/^\d{10}$/.test(matricula)) {
       toast.error("La matricula debe tener 10 digitos");
+      return;
+    }
+    if (!password) {
+      toast.error("Ingresa tu contraseña");
       return;
     }
     const result = login(matricula, password);
@@ -34,29 +63,116 @@ export default function LoginPage() {
           PEQUENAS ACCIONES GRANDES CAMBIOS
         </p>
         <h1 className="mt-2 text-center text-xl font-semibold text-slate-700">ACCION 360 - Seguimiento de servicio</h1>
+
+        <div className="mt-5 flex border-b border-slate-200">
+          <button
+            type="button"
+            onClick={() => switchTab("alumno")}
+            className={`flex flex-1 items-center justify-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+              tab === "alumno"
+                ? "border-green-600 text-green-700"
+                : "border-transparent text-slate-400"
+            }`}
+          >
+            <User className="h-4 w-4" />
+            Alumno
+          </button>
+          <button
+            type="button"
+            onClick={() => switchTab("profesor")}
+            className={`flex flex-1 items-center justify-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+              tab === "profesor"
+                ? "border-green-600 text-green-700"
+                : "border-transparent text-slate-400"
+            }`}
+          >
+            <Lock className="h-4 w-4" />
+            Profesor
+          </button>
+        </div>
+
         <form onSubmit={submit} className="mt-5 space-y-3">
-          <input
-            className="input"
-            placeholder="Matricula (10 digitos)"
-            maxLength={10}
-            value={matricula}
-            onChange={(e) => setMatricula(e.target.value)}
-          />
-          <input
-            type="password"
-            className="input"
-            placeholder="Contrasena"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div>
+            <div className="relative">
+              <input
+                className="input pr-12"
+                placeholder="Matricula (10 digitos)"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={10}
+                value={matricula}
+                onChange={handleMatriculaChange}
+              />
+              <span
+                className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium ${
+                  matricula.length === 10 ? "text-green-600" : "text-slate-400"
+                }`}
+              >
+                {matricula.length}/10
+              </span>
+            </div>
+            {matriculaError && (
+              <p className="mt-1 text-xs text-red-500">{matriculaError}</p>
+            )}
+          </div>
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input pr-10"
+              placeholder="Contrasena"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+
           <button className="btn-primary w-full">Iniciar Sesion</button>
         </form>
+
         <button onClick={() => setOpenRecovery(true)} className="mt-3 text-sm text-green-700 underline">
           Olvidaste tu contrasena?
         </button>
-        <p className="mt-4 text-xs text-slate-500">
-          Alumno: 1234567890 / demo1234 - Profesor: 9876543210 / demo1234
-        </p>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowCredentials(!showCredentials)}
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-300 px-3 py-2 text-xs text-slate-500 transition-colors hover:border-slate-400 hover:text-slate-600"
+          >
+            <KeyRound className="h-3.5 w-3.5" />
+            Ver credenciales de prueba
+          </button>
+
+          {showCredentials && (
+            <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <p className="font-mono text-xs text-slate-700">
+                Matrícula: {demoMatricula}
+                <br />
+                Contraseña: {demoPassword}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setMatricula(demoMatricula);
+                  setPassword(demoPassword);
+                  setShowCredentials(false);
+                  setMatriculaError("");
+                }}
+                className="mt-2 text-xs font-medium text-green-700 underline hover:text-green-800"
+              >
+                Usar estas credenciales
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <Modal open={openRecovery} title="Recuperar cuenta" onClose={() => setOpenRecovery(false)}>

@@ -1,10 +1,3 @@
-export const defaultFaultTypes = [
-  { id: "leve", tipo: "Leve", horas: 4 },
-  { id: "moderada", tipo: "Moderada", horas: 8 },
-  { id: "grave", tipo: "Grave", horas: 14 },
-  { id: "muy-grave", tipo: "Muy Grave", horas: 20 },
-];
-
 export const defaultActivities = [
   {
     id: crypto.randomUUID(),
