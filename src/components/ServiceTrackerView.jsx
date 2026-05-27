@@ -3,6 +3,12 @@ import { CheckCircle, ClipboardList, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { reglamento } from "../data/seed";
 
+const formatearFecha = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  if (isNaN(fecha)) return fechaStr;
+  return fecha.toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" });
+};
+
 export default function ServiceTrackerView({
   mode,
   section,
@@ -44,6 +50,24 @@ export default function ServiceTrackerView({
     if (!actividad.horas) errors.horas = true;
     if (Object.keys(errors).length > 0) {
       setCamposError(errors);
+      return;
+    }
+
+    if (!actividad.fecha) {
+      toast.error("Selecciona una fecha");
+      return;
+    }
+    const fecha = new Date(actividad.fecha);
+    if (fecha > new Date()) {
+      toast.error("La fecha no puede ser en el futuro");
+      return;
+    }
+    if (fecha.getFullYear() > new Date().getFullYear()) {
+      toast.error("La fecha no puede ser en el futuro");
+      return;
+    }
+    if (fecha.getFullYear() < 2020) {
+      toast.error("Verifica que la fecha sea correcta");
       return;
     }
 
@@ -225,10 +249,19 @@ export default function ServiceTrackerView({
     <section className="grid gap-4 xl:grid-cols-3">
       <article className="rounded-2xl bg-white p-4 shadow-soft dark:bg-slate-900">
         <h2 className="mb-3 text-sm font-semibold uppercase text-green-700 dark:text-emerald-300">Resumen de horas</h2>
-        <div className="space-y-2">
-          <div className="stat">Horas Asignadas: {data.horasAsignadas}</div>
-          <div className="stat">Horas Realizadas: {horasRealizadas}</div>
-          <div className="stat">Horas Pendientes: {horasPendientes}</div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-xs text-slate-500">Asignadas</p>
+            <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{data.horasAsignadas}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-xs text-slate-500">Realizadas</p>
+            <p className="text-2xl font-bold text-green-600 dark:text-emerald-400">{horasRealizadas}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-xs text-slate-500">Pendientes</p>
+            <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{horasPendientes}</p>
+          </div>
         </div>
         <div className="mt-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -297,6 +330,7 @@ export default function ServiceTrackerView({
           <input
             className="input"
             type="date"
+            max={new Date().toISOString().split("T")[0]}
             value={actividad.fecha}
             onChange={(e) => setActividad((prev) => ({ ...prev, fecha: e.target.value }))}
           />
@@ -330,12 +364,17 @@ export default function ServiceTrackerView({
               className="card-enter rounded-xl border border-soft-border p-3 dark:border-slate-700"
               style={{ animationDelay: `${idx * 65}ms` }}
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-semibold text-slate-700 dark:text-slate-100">{item.nombre}</p>
-                  <p className="text-sm text-slate-500 dark:text-slate-300">{item.detalle}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {item.fecha || "Sin fecha"} - {item.horas} horas
+              <div className="flex items-start justify-between gap-2 min-w-0">
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="truncate font-semibold text-slate-700 dark:text-slate-100"
+                    title={item.nombre}
+                  >
+                    {item.nombre}
+                  </p>
+                  <p className="line-clamp-2 text-sm text-slate-500 dark:text-slate-300">{item.detalle}</p>
+                  <p className="whitespace-nowrap text-xs text-slate-500 dark:text-slate-400">
+                    {item.fecha ? formatearFecha(item.fecha) : "Sin fecha"} · {item.horas} horas
                   </p>
                 </div>
                 {canEditFaults && (
