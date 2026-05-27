@@ -4,20 +4,60 @@
 
 body {
   font-family: Inter, "DM Sans", system-ui, sans-serif;
+  @apply bg-soft-bg text-slate-800;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .input {
-  @apply w-full rounded-xl border border-soft-border bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100;
+  @apply w-full rounded-xl border border-soft-border bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition duration-200 focus:border-primary focus:ring-2 focus:ring-primary/10;
 }
 
 .btn-primary {
-  @apply rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700;
+  @apply rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-[0.98];
 }
 
 .btn-icon {
-  @apply rounded-xl border border-soft-border bg-white p-2 text-slate-600 transition hover:bg-green-50 hover:text-green-700;
+  @apply rounded-xl border border-soft-border bg-white p-2.5 text-slate-600 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30;
 }
 
 .stat {
-  @apply rounded-xl border border-green-300 bg-green-100 p-2 text-sm font-semibold text-green-800;
+  @apply rounded-xl border border-primary/30 bg-primary/10 p-2.5 text-sm font-semibold text-primary;
+}
+
+.card-enter {
+  animation: fade-up 320ms ease-out both;
+}
+
+.modal-backdrop {
+  animation: fade-up 180ms ease-out both;
+}
+
+.modal-panel {
+  animation: modal-in 240ms ease-out both;
+}
+
+button,
+a[role="button"] {
+  cursor: pointer;
 }

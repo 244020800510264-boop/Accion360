@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [showCredentials, setShowCredentials] = useState(false);
   const [tab, setTab] = useState("alumno");
   const [matriculaError, setMatriculaError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -39,21 +40,29 @@ export default function LoginPage() {
 
   const submit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     if (!/^\d{10}$/.test(matricula)) {
       toast.error("La matricula debe tener 10 digitos");
+      setIsLoading(false);
       return;
     }
     if (!password) {
       toast.error("Ingresa tu contraseña");
+      setIsLoading(false);
       return;
     }
+
     const result = login(matricula, password);
     if (!result.ok) {
       toast.error("Credenciales invalidas");
+      setIsLoading(false);
       return;
     }
+
     toast.success("Sesion iniciada");
     navigate(result.user.rol === "profesor" ? "/profesor" : "/alumno");
+    setIsLoading(false);
   };
 
   return (
@@ -102,6 +111,7 @@ export default function LoginPage() {
                 maxLength={10}
                 value={matricula}
                 onChange={handleMatriculaChange}
+                disabled={isLoading}
               />
               <span
                 className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium ${
@@ -111,9 +121,7 @@ export default function LoginPage() {
                 {matricula.length}/10
               </span>
             </div>
-            {matriculaError && (
-              <p className="mt-1 text-xs text-red-500">{matriculaError}</p>
-            )}
+            {matriculaError && <p className="mt-1 text-xs text-red-500">{matriculaError}</p>}
           </div>
 
           <div className="relative">
@@ -123,6 +131,7 @@ export default function LoginPage() {
               placeholder="Contrasena"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
             <button
               type="button"
@@ -134,7 +143,9 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <button className="btn-primary w-full">Iniciar Sesion</button>
+          <button className="btn-primary w-full" disabled={isLoading}>
+            {isLoading ? "Iniciando..." : "Iniciar Sesion"}
+          </button>
         </form>
 
         <button onClick={() => setOpenRecovery(true)} className="mt-3 text-sm text-green-700 underline">

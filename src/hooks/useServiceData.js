@@ -70,6 +70,13 @@ export function useServiceData() {
     setData((prev) => ({ ...prev, actividades: prev.actividades.filter((item) => item.id !== id) }));
   };
 
+  const updateActividad = (id, payload) => {
+    setData((prev) => ({
+      ...prev,
+      actividades: prev.actividades.map((item) => (item.id === id ? { ...item, ...payload } : item)),
+    }));
+  };
+
   const updateFaultCard = (faltaCometida, tipoFaltaActual) => {
     setData((prev) => ({ ...prev, faltaCometida, tipoFaltaActual }));
   };
@@ -85,6 +92,13 @@ export function useServiceData() {
     }));
   };
 
+  const removeHistorialFalta = (id) => {
+    setData((prev) => ({
+      ...prev,
+      historialFaltas: prev.historialFaltas.filter((item) => item.id !== id),
+    }));
+  };
+
   const saveData = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
   return {
@@ -93,9 +107,11 @@ export function useServiceData() {
     horasPendientes,
     addActividad,
     removeActividad,
+    updateActividad,
     updateFaultCard,
     updateTiposFaltas,
     addHistorialFalta,
+    removeHistorialFalta,
     saveData,
   };
 }
